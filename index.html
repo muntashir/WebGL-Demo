@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>WebGL Demo</title>
+    <meta charset="utf-8">
+
+    <!-- Styles -->
+    <link rel="stylesheet" href="style.css">
+
+    <!-- Libraries -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gl-matrix/2.3.0/gl-matrix-min.js"></script>
+
+    <!-- Scripts -->
+    <script src="webgl.js"></script>
+    <script src="script.js"></script>
+
+    <!-- Shaders -->
+    <script id="shader-vs" type="x-shader/x-vertex">
+        attribute vec3 aVertexPosition;
+
+        uniform mat4 uTransform;
+        uniform mat4 uPerspective;
+
+        void main(void) {
+            gl_Position = uPerspective * uTransform * vec4(aVertexPosition, 1.0);
+        }
+    </script>
+
+    <script id="shader-fs" type="x-shader/x-fragment">
+        void main(void) {
+            gl_FragColor = vec4(1.0, 1.0, 1.0, 1.0);
+        }
+    </script>
+
+</head>
+
+<body>
+    <canvas id="canvas"></canvas>
+</body>
+
+</html>
