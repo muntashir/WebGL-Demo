@@ -22,6 +22,16 @@ function linkShaders(gl, vertexID, fragmentID) {
     return shaderProgram;
 }
 
+function initElementArrayBuffer(gl, data) {
+    //Create and bind buffer
+    var buffer = gl.createBuffer();
+    if (!buffer) throw new Error('Failed to create buffer');
+    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, buffer);
+
+    //Insert data into buffer
+    gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(data), gl.STATIC_DRAW);
+};
+
 function initBuffer(gl, data, elemPerVertex, attribute) {
     //Create and bind buffer
     var buffer = gl.createBuffer();
