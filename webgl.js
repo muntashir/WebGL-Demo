@@ -29,9 +29,8 @@ function initBuffer(gl, data, elemPerVertex, attribute) {
     gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
 
     //Insert data into buffer
-    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(data), gl.STATIC_DRAW);
-    gl.vertexAttribPointer(attribute, elemPerVertex, gl.FLOAT, false, 0, 0);
     gl.enableVertexAttribArray(attribute);
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(data), gl.STATIC_DRAW);
     gl.vertexAttribPointer(attribute, elemPerVertex, gl.FLOAT, false, 0, 0);
 };
 

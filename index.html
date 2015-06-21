@@ -18,19 +18,34 @@
 
     <!-- Shaders -->
     <script id="shader-vs" type="x-shader/x-vertex">
-        attribute vec3 aVertexPosition;
+        attribute highp vec3 aVertexPosition;
+        attribute highp vec3 aVertexNormal;
 
-        uniform mat4 uTransform;
-        uniform mat4 uPerspective;
+        uniform highp mat4 uNormal;
+        uniform highp mat4 uTransform;
+        uniform highp mat4 uPerspective;
+
+        varying highp vec3 vLighting;
 
         void main(void) {
             gl_Position = uPerspective * uTransform * vec4(aVertexPosition, 1.0);
+
+            highp vec3 ambientLight = vec3(0.6, 0.6, 0.6);
+            highp vec3 directionalLightColor = vec3(0.5, 0.5, 0.75);
+            highp vec3 directionalVector = vec3(0.85, 0.8, 0.75);
+
+            highp vec4 transformedNormal = uNormal * vec4(aVertexNormal, 1.0);
+
+            highp float directional = max(dot(transformedNormal.xyz, directionalVector), 0.0);
+            vLighting = ambientLight + (directionalLightColor * directional);
         }
     </script>
 
     <script id="shader-fs" type="x-shader/x-fragment">
+        varying highp vec3 vLighting;
+
         void main(void) {
-            gl_FragColor = vec4(1.0, 1.0, 1.0, 1.0);
+            gl_FragColor = vec4(vLighting, 1.0);
         }
     </script>
 

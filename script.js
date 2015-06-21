@@ -7,6 +7,7 @@ var uniforms;
 //Matrices
 var mPerspective = mat4.create();
 var mTransform = mat4.create();
+var mNormal = mat4.create();
 
 //Properties
 var rotationX = 0;
@@ -25,14 +26,85 @@ $(document).ready(function () {
 function createScene() {
     //Make vertices
     var vertices = [
-    1.0, 1.0, 0.0,
-    -1.0, 1.0, 0.0,
-    1.0, -1.0, 0.0,
-    -1.0, -1.0, 0.0
+    // Front face
+    -1.0, -1.0, 1.0,
+     1.0, -1.0, 1.0,
+     1.0, 1.0, 1.0,
+    -1.0, 1.0, 1.0,
+
+    // Back face
+    -1.0, -1.0, -1.0,
+    -1.0, 1.0, -1.0,
+     1.0, 1.0, -1.0,
+     1.0, -1.0, -1.0,
+
+    // Top face
+    -1.0, 1.0, -1.0,
+    -1.0, 1.0, 1.0,
+     1.0, 1.0, 1.0,
+     1.0, 1.0, -1.0,
+
+    // Bottom face
+    -1.0, -1.0, -1.0,
+     1.0, -1.0, -1.0,
+     1.0, -1.0, 1.0,
+    -1.0, -1.0, 1.0,
+
+    // Right face
+     1.0, -1.0, -1.0,
+     1.0, 1.0, -1.0,
+     1.0, 1.0, 1.0,
+     1.0, -1.0, 1.0,
+
+    // Left face
+    -1.0, -1.0, -1.0,
+    -1.0, -1.0, 1.0,
+    -1.0, 1.0, 1.0,
+    -1.0, 1.0, -1.0
     ];
+
+    var vertexNormals = [
+    // Front
+     0.0, 0.0, 1.0,
+     0.0, 0.0, 1.0,
+     0.0, 0.0, 1.0,
+     0.0, 0.0, 1.0,
+
+    // Back
+     0.0, 0.0, -1.0,
+     0.0, 0.0, -1.0,
+     0.0, 0.0, -1.0,
+     0.0, 0.0, -1.0,
+
+    // Top
+     0.0, 1.0, 0.0,
+     0.0, 1.0, 0.0,
+     0.0, 1.0, 0.0,
+     0.0, 1.0, 0.0,
+
+    // Bottom
+     0.0, -1.0, 0.0,
+     0.0, -1.0, 0.0,
+     0.0, -1.0, 0.0,
+     0.0, -1.0, 0.0,
+
+    // Right
+     1.0, 0.0, 0.0,
+     1.0, 0.0, 0.0,
+     1.0, 0.0, 0.0,
+     1.0, 0.0, 0.0,
+
+    // Left
+    -1.0, 0.0, 0.0,
+    -1.0, 0.0, 0.0,
+    -1.0, 0.0, 0.0,
+    -1.0, 0.0, 0.0
+    ];
+
     var elemPerVertex = 3;
 
     //Setup buffer for vertices
+    initBuffer(gl, vertexNormals, elemPerVertex, attributes.aVertexNormal);
     initBuffer(gl, vertices, elemPerVertex, attributes.aVertexPosition);
 
     //Setup perspective matrix
@@ -59,16 +131,19 @@ function drawScene() {
     pushMatrix(mTransform);
 
     //Create new transform matrix
-    mTransform = createTransformationMatrix([0.0, 0.0, -3.0], [rotationX, rotationY, rotationZ], [1.0, 1.0, 1.0]);
+    mTransform = createTransformationMatrix([0.0, 0.0, -4.0], [rotationX, rotationY, rotationZ], [1.0, 1.0, 1.0]);
+    mat4.invert(mNormal, mTransform);
+    mat4.transpose(mNormal, mNormal);
 
     //Set transform matrix
     gl.uniformMatrix4fv(uniforms.uTransform, false, new Float32Array(mTransform));
+    gl.uniformMatrix4fv(uniforms.uNormal, false, new Float32Array(mNormal));
 
     //Pop old transform matrix
     mTransform = popMatrix();
 
     //Draw from buffer
-    gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+    gl.drawArrays(gl.TRIANGLE_STRIP, 0, 24);
 
     window.requestAnimationFrame(drawScene);
 }
