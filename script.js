@@ -1,6 +1,7 @@
 //Global GL variables
 var gl;
 var shaderProgram;
+var texture;
 var attributes;
 var uniforms;
 
@@ -20,6 +21,7 @@ $(document).ready(function () {
     shaderProgram = linkShaders(gl, "shader-vs", "shader-fs");
     getUniformsAndAttributes();
     createScene();
+    texture = initTexture(gl, "tex.png");
     window.requestAnimationFrame(drawScene);
 });
 
@@ -110,10 +112,44 @@ function createScene() {
     -1.0, 0.0, 0.0
     ];
 
+    var textureCoordinates = [
+    // Front
+    0.0, 0.0,
+    1.0, 0.0,
+    1.0, 1.0,
+    0.0, 1.0,
+    // Back
+    0.0, 0.0,
+    1.0, 0.0,
+    1.0, 1.0,
+    0.0, 1.0,
+    // Top
+    0.0, 0.0,
+    1.0, 0.0,
+    1.0, 1.0,
+    0.0, 1.0,
+    // Bottom
+    0.0, 0.0,
+    1.0, 0.0,
+    1.0, 1.0,
+    0.0, 1.0,
+    // Right
+    0.0, 0.0,
+    1.0, 0.0,
+    1.0, 1.0,
+    0.0, 1.0,
+    // Left
+    0.0, 0.0,
+    1.0, 0.0,
+    1.0, 1.0,
+    0.0, 1.0
+    ];
+
     var elemPerVertex = 3;
 
     //Setup buffer for vertices
     initBuffer(gl, vertexNormals, elemPerVertex, attributes.aVertexNormal);
+    initBuffer(gl, textureCoordinates, 2, attributes.aTextureCoord);
     initBuffer(gl, vertices, elemPerVertex, attributes.aVertexPosition);
     initElementArrayBuffer(gl, cubeVertexIndices);
 
@@ -142,8 +178,7 @@ function drawScene() {
 
     //Create new transform matrix
     mTransform = createTransformationMatrix([0.0, 0.0, -4.0], [rotationX, rotationY, rotationZ], [1.0, 1.0, 1.0]);
-    mat4.invert(mNormal, mTransform);
-    mat4.transpose(mNormal, mNormal);
+    mNormal = getNormalMatrix(mTransform);
 
     //Set transform matrix
     gl.uniformMatrix4fv(uniforms.uTransform, false, new Float32Array(mTransform));
@@ -151,6 +186,11 @@ function drawScene() {
 
     //Pop old transform matrix
     mTransform = popMatrix();
+
+    //Set texture
+    gl.activeTexture(gl.TEXTURE0);
+    gl.bindTexture(gl.TEXTURE_2D, texture);
+    gl.uniform1i(uniforms.uTexture, 0);
 
     //Draw from buffer
     gl.drawElements(gl.TRIANGLES, 36, gl.UNSIGNED_SHORT, 0);

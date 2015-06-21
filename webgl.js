@@ -2,6 +2,31 @@ var matrixStack = [];
 var currentTime = (new Date()).getTime();
 var lastTime = (new Date()).getTime();
 
+function initTexture(gl, url) {
+    var texture = gl.createTexture();
+    var image = new Image();
+    image.src = url;
+    image.onload = function () {
+        gl.bindTexture(gl.TEXTURE_2D, texture);
+        gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, 1);
+        gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, image);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR_MIPMAP_LINEAR);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR_MIPMAP_NEAREST);
+        gl.generateMipmap(gl.TEXTURE_2D);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+        gl.bindTexture(gl.TEXTURE_2D, null);
+    }
+    return texture;
+}
+
+function getNormalMatrix(m) {
+    var mNormal = mat4.create()
+    mat4.invert(mNormal, m);
+    mat4.transpose(mNormal, mNormal);
+    return mNormal;
+}
+
 function linkShaders(gl, vertexID, fragmentID) {
     //Get shaders
     var shaderProgram;
